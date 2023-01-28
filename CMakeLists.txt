@@ -55,6 +55,7 @@ Papyrus_Add(
 	SOURCES
 		"${PROJECT_SOURCE_DIR}/scripts/UILIB_1.psc"
 		"${PROJECT_SOURCE_DIR}/scripts/UITextEntryMenu.psc"
+		"${PROJECT_SOURCE_DIR}/scripts/VirtualKeyboard.psc"
 	OPTIMIZE
 	ANONYMIZE
 	COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME}

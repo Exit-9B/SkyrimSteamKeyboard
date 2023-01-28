@@ -1,6 +1,7 @@
 #include "Hooks/CharGenManager.h"
 #include "Hooks/EnchantManager.h"
 #include "Hooks/MainThreadManager.h"
+#include "Papyrus/VirtualKeyboard.h"
 
 namespace
 {
@@ -57,6 +58,8 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	Hooks::CharGenManager::GetSingleton()->Install();
 	Hooks::EnchantManager::GetSingleton()->Install();
 	Hooks::MainThreadManager::GetSingleton()->Install();
+
+	SKSE::GetPapyrusInterface()->Register(&Papyrus::VirtualKeyboard::RegisterFuncs);
 
 	SKSE::GetMessagingInterface()->RegisterListener(
 		[](auto a_msg)

@@ -39,11 +39,20 @@ String Function ShowTextInput(String asTitle = "", String asInitialText = "")
 	sInput = ""
 	sTitle = asTitle
 	sInitialText = asInitialText
-	TextInputMenu_Open(Self)
-	While(bMenuOpen)
-		Utility.WaitMenuMode(0.1)
-	EndWhile
-	TextInputMenu_Release(Self)
+	If(VirtualKeyboard.ShouldBeUsed())
+		Self.RegisterForModEvent("VirtualKeyboardClose", "OnVirtualKeyboardClose")
+		VirtualKeyboard.Show(sTitle, sInitialText)
+		While(bMenuOpen)
+			Utility.WaitMenuMode(0.1)
+		EndWhile
+		UnregisterForModEvent("VirtualKeyboardClose")
+	Else
+		TextInputMenu_Open(Self)
+		While(bMenuOpen)
+			Utility.WaitMenuMode(0.1)
+		EndWhile
+		TextInputMenu_Release(Self)
+	EndIf
 	Return sInput
 EndFunction
 
@@ -55,6 +64,17 @@ EndEvent
 
 Event OnTextInputClose(String asEventName, String asInput, Float afCancelled, Form akSender)
 	If(asEventName == "UILIB_1_textInputClose")
+		If(afCancelled as Bool)
+			sInput = ""
+		Else
+			sInput = asInput
+		EndIf
+		bMenuOpen = False
+	EndIf
+EndEvent
+
+Event OnVirtualKeyboardClose(String asEventName, String asInput, Float afCancelled, Form akSender)
+	If(asEventName == "VirtualKeyboardClose")
 		If(afCancelled as Bool)
 			sInput = ""
 		Else
