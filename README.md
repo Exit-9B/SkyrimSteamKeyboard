@@ -7,6 +7,8 @@ Allows Skyrim to make use of Steam Big Picture functionality.
 	* Add the environment variable `VCPKG_ROOT` with the value as the path to the folder containing vcpkg
 * [Visual Studio Community 2022](https://visualstudio.microsoft.com/)
 	* Desktop development with C++
+* [SKSE64 SDK](https://skse.silverlock.org/)
+	* Add the environment variable `SKSE64Path`
 * [Steamworks SDK v1.34](https://partner.steamgames.com/downloads/list)
 	* Extract to `external/steamworks_sdk_134`
 
