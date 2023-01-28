@@ -9,6 +9,14 @@ namespace RE
 			inline constexpr auto SetTextInputMode = REL::ID(68552);
 		}
 
+		namespace CraftingSubMenus
+		{
+			namespace EnchantConstructMenu
+			{
+				inline constexpr auto ProcessUserEvent = REL::ID(51379);
+			}
+		}
+
 		namespace Main
 		{
 			inline constexpr auto Update = REL::ID(36564);

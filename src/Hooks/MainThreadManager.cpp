@@ -13,7 +13,10 @@ namespace Hooks
 	void MainThreadManager::Install()
 	{
 		auto hook = REL::Relocation<std::uintptr_t>(RE::Offset::Main::Update, 0x3E);
-		REL::make_pattern<"E8">().match_or_fail(hook.address());
+
+		if (!REL::make_pattern<"E8">().match(hook.address())) {
+			util::report_and_fail("Failed to install MainThreadManager");
+		}
 
 		auto& trampoline = SKSE::GetTrampoline();
 		_DoFrame = trampoline.write_call<5>(hook.address(), &OnFrame);

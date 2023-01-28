@@ -18,4 +18,18 @@ namespace Steam
 
 		return ::_tcscmp(buffer.get(), TEXT("1")) == 0;
 	}
+
+	bool ShouldUseVirtualKeyboard()
+	{
+		if (!IsBigPictureEnabled()) {
+			return false;
+		}
+
+		auto utils = ::SteamUtils();
+		if (!utils || !utils->IsOverlayEnabled()) {
+			return false;
+		}
+
+		return true;
+	}
 }

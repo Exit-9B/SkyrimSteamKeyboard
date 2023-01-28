@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Steam/CallbackManager.h"
+
 namespace Hooks
 {
-	class CharGenManager final
+	class CharGenManager final : public Steam::ICallbackHandler<::GamepadTextInputDismissed_t>
 	{
 	public:
 		static CharGenManager* GetSingleton();
@@ -16,14 +18,16 @@ namespace Hooks
 
 		void SetDefaultName(std::string_view a_name);
 
+		void HandleEvent(::GamepadTextInputDismissed_t* a_param) override;
+
 	private:
 		inline static constexpr uint32 NAME_MAX_CHARS = 26;
 
-		CharGenManager();
+		CharGenManager() = default;
 
-		void InstallShowTextEntryOverride();
+		void ShowTextEntryPatch();
 
-		void InstallShowVirtualKeyboard();
+		void ShowVirtualKeyboardPatch();
 
 		static void TryShowGamepadTextInput();
 
@@ -31,14 +35,8 @@ namespace Hooks
 
 		static void AddArg(RE::GArray<RE::GFxValue>* a_args, RE::GFxValue& a_bShowTextEntry);
 
-		STEAM_CALLBACK(
-			CharGenManager,
-			OnGamepadTextInputDismissed,
-			GamepadTextInputDismissed_t,
-			_gamepadTextInputDismissedCallback);
-
 		inline static REL::Relocation<decltype(&AddArg)> _AddArg;
 
-		inline static std::string _defaultName;
+		std::string _defaultName;
 	};
 }

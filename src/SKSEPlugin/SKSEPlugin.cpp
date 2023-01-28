@@ -1,4 +1,5 @@
 #include "Hooks/CharGenManager.h"
+#include "Hooks/EnchantManager.h"
 #include "Hooks/MainThreadManager.h"
 
 namespace
@@ -51,9 +52,10 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
 
 	SKSE::Init(a_skse);
-	SKSE::AllocTrampoline(28);
+	SKSE::AllocTrampoline(42);
 
 	Hooks::CharGenManager::GetSingleton()->Install();
+	Hooks::EnchantManager::GetSingleton()->Install();
 	Hooks::MainThreadManager::GetSingleton()->Install();
 
 	SKSE::GetMessagingInterface()->RegisterListener(
