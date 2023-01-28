@@ -1,5 +1,7 @@
 #include "Steam.h"
 
+#include "RE/Offset.h"
+
 #include <Windows.h>
 
 #include <tchar.h>
@@ -19,9 +21,24 @@ namespace Steam
 		return ::_tcscmp(buffer.get(), TEXT("1")) == 0;
 	}
 
+	bool IsUsingGamepad()
+	{
+		using IsUsingGamepad_t = bool (*)(RE::BSInputDeviceManager*);
+		REL::Relocation<IsUsingGamepad_t> isUsingGamepad{
+			RE::Offset::BSInputDeviceManager::IsUsingGamepad
+		};
+
+		const auto deviceManager = RE::BSInputDeviceManager::GetSingleton();
+		return deviceManager && isUsingGamepad(deviceManager);
+	}
+
 	bool ShouldUseVirtualKeyboard()
 	{
 		if (!IsBigPictureEnabled()) {
+			return false;
+		}
+
+		if (!IsUsingGamepad()) {
 			return false;
 		}
 

@@ -4,6 +4,11 @@ namespace RE
 {
 	namespace Offset
 	{
+		namespace BSInputDeviceManager
+		{
+			inline constexpr auto IsUsingGamepad = REL::ID(68622);
+		}
+
 		namespace ControlMap
 		{
 			inline constexpr auto SetTextInputMode = REL::ID(68552);
