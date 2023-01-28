@@ -34,15 +34,25 @@ int Function OpenMenu(Form inForm = None, Form akReceiver = None)
 		return 0
 	Endif
 
-	RegisterForModEvent("UITextEntryMenu_LoadMenu", "OnLoadMenu")
-	RegisterForModEvent("UITextEntryMenu_CloseMenu", "OnUnloadMenu")
-	RegisterForModEvent("UITextEntryMenu_TextChanged", "OnTextChanged")
+	If VirtualKeyboard.ShouldBeUsed()
+		RegisterForModEvent("VirtualKeyboardClose", "OnVirtualKeyboardClose")
 
-	Lock()
-	UI.OpenCustomMenu("textentrymenu")
-	If !WaitLock()
-		return 0
+		Lock()
+		VirtualKeyboard.Show("", _internalString)
+		While !WaitLock()
+		EndWhile
+	Else
+		RegisterForModEvent("UITextEntryMenu_LoadMenu", "OnLoadMenu")
+		RegisterForModEvent("UITextEntryMenu_CloseMenu", "OnUnloadMenu")
+		RegisterForModEvent("UITextEntryMenu_TextChanged", "OnTextChanged")
+
+		Lock()
+		UI.OpenCustomMenu("textentrymenu")
+		If !WaitLock()
+			return 0
+		Endif
 	Endif
+
 	return 1
 EndFunction
 
@@ -58,6 +68,12 @@ EndEvent
 
 Event OnTextChanged(string eventName, string strArg, float numArg, Form formArg)
 	_internalResult = strArg
+	Unlock()
+EndEvent
+
+Event OnVirtualKeyboardClose(string eventName, string strArg, float numArg, Form formArg)
+	_internalResult = strArg
+	UnregisterForModEvent("VirtualKeyboardClose")
 	Unlock()
 EndEvent
 
