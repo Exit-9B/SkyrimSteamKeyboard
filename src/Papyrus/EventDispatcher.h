@@ -18,7 +18,5 @@ namespace Papyrus
 
 	private:
 		EventDispatcher() = default;
-
-		RE::BSFixedString GetTextInput(::GamepadTextInputDismissed_t* a_param);
 	};
 }

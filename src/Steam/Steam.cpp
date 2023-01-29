@@ -21,6 +21,12 @@ namespace Steam
 		return ::_tcscmp(buffer.get(), TEXT("1")) == 0;
 	}
 
+	bool IsOverlayEnabled()
+	{
+		auto utils = ::SteamUtils();
+		return utils && utils->IsOverlayEnabled();
+	}
+
 	bool IsUsingGamepad()
 	{
 		using IsUsingGamepad_t = bool (*)(RE::BSInputDeviceManager*);
@@ -34,19 +40,32 @@ namespace Steam
 
 	bool ShouldUseVirtualKeyboard()
 	{
-		if (!IsBigPictureEnabled()) {
-			return false;
-		}
+		return IsBigPictureEnabled() && IsUsingGamepad() && IsOverlayEnabled();
+	}
 
-		if (!IsUsingGamepad()) {
-			return false;
+	std::string GetTextInput(::GamepadTextInputDismissed_t* a_param)
+	{
+		std::string textInput;
+
+		if (!a_param->m_bSubmitted) {
+			return textInput;
 		}
 
 		auto utils = ::SteamUtils();
-		if (!utils || !utils->IsOverlayEnabled()) {
-			return false;
+		if (!utils) {
+			return textInput;
 		}
 
-		return true;
+		uint32 length = utils->GetEnteredGamepadTextLength();
+		if (length == 0) {
+			return textInput;
+		}
+
+		auto buffer = std::make_unique<char[]>(length);
+		utils->GetEnteredGamepadTextInput(buffer.get(), length);
+
+		textInput = buffer.get();
+
+		return textInput;
 	}
 }

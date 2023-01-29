@@ -1,6 +1,7 @@
 #include "Hooks/CharGenManager.h"
 #include "Hooks/EnchantManager.h"
 #include "Hooks/MainThreadManager.h"
+#include "Hooks/SKSEManager.h"
 #include "Papyrus/VirtualKeyboard.h"
 
 namespace
@@ -53,7 +54,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
 
 	SKSE::Init(a_skse);
-	SKSE::AllocTrampoline(42);
+	SKSE::AllocTrampoline(50);
 
 	Hooks::CharGenManager::GetSingleton()->Install();
 	Hooks::EnchantManager::GetSingleton()->Install();
@@ -65,6 +66,9 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 		[](auto a_msg)
 		{
 			switch (a_msg->type) {
+			case SKSE::MessagingInterface::kInputLoaded:
+				Hooks::SKSEManager::GetSingleton()->Install();
+				break;
 			case SKSE::MessagingInterface::kDataLoaded:
 				if (auto playerBase = RE::TESForm::LookupByID<RE::TESNPC>(0x7)) {
 					auto charGenManager = Hooks::CharGenManager::GetSingleton();
