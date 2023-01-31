@@ -39,8 +39,9 @@ int Function OpenMenu(Form inForm = None, Form akReceiver = None)
 
 		Lock()
 		VirtualKeyboard.Show("", _internalString)
-		While !WaitLock()
-		EndWhile
+		If !WaitLock()
+			return 0
+		EndIf
 	Else
 		RegisterForModEvent("UITextEntryMenu_LoadMenu", "OnLoadMenu")
 		RegisterForModEvent("UITextEntryMenu_CloseMenu", "OnUnloadMenu")
