@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
-  "name": "steaminputhelper",
+  "name": "skyrimsteamkeyboard",
   "version": "1",
   "dependencies": [
     "boost-stl-interfaces",

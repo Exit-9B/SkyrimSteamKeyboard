@@ -19,8 +19,8 @@ Allows Skyrim to make use of Steam Big Picture functionality.
 
 ## Building
 ```
-git clone https://github.com/Exit-9B/SteamInputHelper
-cd SteamInputHelper
+git clone https://github.com/Exit-9B/SkyrimSteamKeyboard
+cd SkyrimSteamKeyboard
 git submodule init
 git submodule update
 cmake --preset vs2022-windows
