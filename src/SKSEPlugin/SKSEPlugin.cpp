@@ -4,6 +4,8 @@
 #include "Hooks/SKSEManager.h"
 #include "Papyrus/VirtualKeyboard.h"
 
+#include <Windows.h>
+
 namespace
 {
 	void InitializeLog()
@@ -55,6 +57,12 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 
 	SKSE::Init(a_skse);
 	SKSE::AllocTrampoline(50);
+
+	if (::GetModuleHandle("Galaxy64")) {
+		if (::SteamAPI_Init()) {
+			::atexit(&::SteamAPI_Shutdown);
+		}
+	}
 
 	Hooks::CharGenManager::GetSingleton()->Install();
 	Hooks::EnchantManager::GetSingleton()->Install();
