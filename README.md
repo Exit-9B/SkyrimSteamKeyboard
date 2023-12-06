@@ -9,8 +9,8 @@ Allows Skyrim to make use of Steam Big Picture functionality.
 	* Desktop development with C++
 * [SKSE64 SDK](https://skse.silverlock.org/)
 	* Add the environment variable `SKSE64Path`
-* [Steamworks SDK v1.34](https://partner.steamgames.com/downloads/list)
-	* Extract to `external/steamworks_sdk_134`
+* [Steamworks SDK v1.55](https://partner.steamgames.com/downloads/list)
+	* Extract to `external/steamworks_sdk_155`
 
 ## Register Visual Studio as a Generator
 * Open `x64 Native Tools Command Prompt`

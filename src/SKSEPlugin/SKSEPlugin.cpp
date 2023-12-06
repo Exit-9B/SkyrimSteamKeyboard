@@ -1,10 +1,6 @@
-#include "Hooks/CharGenManager.h"
-#include "Hooks/EnchantManager.h"
-#include "Hooks/MainThreadManager.h"
 #include "Hooks/SKSEManager.h"
+#include "Hooks/SystemUtilityManager.h"
 #include "Papyrus/VirtualKeyboard.h"
-
-#include <Windows.h>
 
 namespace
 {
@@ -46,6 +42,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
 	v.AuthorName("Parapets"sv);
 
 	v.UsesAddressLibrary(true);
+	v.MinimumRequiredXSEVersion({ 2, 2, 5 });
 
 	return v;
 }();
@@ -56,17 +53,9 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
 
 	SKSE::Init(a_skse);
-	SKSE::AllocTrampoline(50);
+	SKSE::AllocTrampoline(22);
 
-	if (::GetModuleHandle("Galaxy64")) {
-		if (::SteamAPI_Init()) {
-			::atexit(&::SteamAPI_Shutdown);
-		}
-	}
-
-	Hooks::CharGenManager::GetSingleton()->Install();
-	Hooks::EnchantManager::GetSingleton()->Install();
-	Hooks::MainThreadManager::GetSingleton()->Install();
+	Hooks::SystemUtilityManager::GetSingleton()->Install();
 
 	SKSE::GetPapyrusInterface()->Register(&Papyrus::VirtualKeyboard::RegisterFuncs);
 
@@ -76,12 +65,6 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 			switch (a_msg->type) {
 			case SKSE::MessagingInterface::kInputLoaded:
 				Hooks::SKSEManager::GetSingleton()->Install();
-				break;
-			case SKSE::MessagingInterface::kDataLoaded:
-				if (auto playerBase = RE::TESForm::LookupByID<RE::TESNPC>(0x7)) {
-					auto charGenManager = Hooks::CharGenManager::GetSingleton();
-					charGenManager->SetDefaultName(playerBase->fullName);
-				}
 				break;
 			}
 		});

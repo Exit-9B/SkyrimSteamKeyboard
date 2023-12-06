@@ -16,6 +16,10 @@ namespace Papyrus
 			bool abMultipleLines,
 			bool abPassword);
 
+		void VirtualKeyboardDone(void* a_userParam, const char* a_text);
+
+		void OnVirtualKeyboardCancel();
+
 		bool RegisterFuncs(RE::BSScript::IVirtualMachine* a_vm);
 	}
 }
