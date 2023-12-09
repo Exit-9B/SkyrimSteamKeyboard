@@ -7,31 +7,12 @@ namespace RE
 		namespace BSInputDeviceManager
 		{
 			inline constexpr auto IsUsingGamepad = REL::ID(68622);
+			inline constexpr auto PollInputDevices = REL::ID(68617);
 		}
 
-		namespace ControlMap
+		namespace BSWin32SystemUtility
 		{
-			inline constexpr auto SetTextInputMode = REL::ID(68552);
+			inline constexpr auto Vtbl = REL::ID(255953);
 		}
-
-		namespace CraftingSubMenus
-		{
-			namespace EnchantConstructMenu
-			{
-				inline constexpr auto ProcessUserEvent = REL::ID(51379);
-			}
-		}
-
-		namespace Main
-		{
-			inline constexpr auto Update = REL::ID(36564);
-		}
-
-		namespace RaceSexMenu
-		{
-			inline constexpr auto ShowTextEntry = REL::ID(52383);
-		}
-
-		inline constexpr auto ShowVirtualKeyboard = REL::ID(52349);
 	}
 }

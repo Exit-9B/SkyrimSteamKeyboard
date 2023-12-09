@@ -1,7 +1,6 @@
 #include "VirtualKeyboard.h"
 
-#include "EventDispatcher.h"
-#include "Steam/Steam.h"
+#include "Hooks/SystemUtilityManager.h"
 
 #define REGISTER(a_vm, a_function) \
 	a_vm->RegisterFunction(#a_function##sv, SCRIPT_NAME, &a_function)
@@ -10,7 +9,7 @@ namespace Papyrus
 {
 	bool VirtualKeyboard::ShouldBeUsed(RE::StaticFunctionTag*)
 	{
-		return Steam::ShouldUseVirtualKeyboard();
+		return Hooks::SystemUtilityManager::GetSingleton()->ShouldUseVirtualKeyboard();
 	}
 
 	void VirtualKeyboard::Show(
@@ -21,27 +20,43 @@ namespace Papyrus
 		bool abMultipleLines,
 		bool abPassword)
 	{
-		auto utils = ::SteamUtils();
-		if (!utils || !utils->IsOverlayEnabled()) {
-			return;
-		}
-
-		auto inputMode = !abPassword
-			? k_EGamepadTextInputModeNormal
-			: k_EGamepadTextInputModePassword;
-
-		auto lineInputMode = !abMultipleLines
-			? k_EGamepadTextInputLineModeSingleLine
-			: k_EGamepadTextInputLineModeMultipleLines;
-
-		utils->ShowGamepadTextInput(
-			inputMode,
-			lineInputMode,
-			asDescription.c_str(),
+		Hooks::SystemUtilityManager::GetSingleton()->ShowVirtualKeyboard(
+			asExistingText.c_str(),
+			&VirtualKeyboardDone,
+			&OnVirtualKeyboardCancel,
+			nullptr,
 			aiMaxChars,
-			asExistingText.c_str());
+			asDescription.c_str(),
+			abMultipleLines,
+			abPassword);
+	}
 
-		Steam::CallbackManager::GetSingleton()->RegisterListener(EventDispatcher::GetSingleton());
+	void VirtualKeyboard::VirtualKeyboardDone(
+		[[maybe_unused]] void* a_userParam,
+		const char* a_text)
+	{
+		auto modEvent = SKSE::ModCallbackEvent{
+			.eventName = "VirtualKeyboardClose",
+			.strArg = a_text,
+			.numArg = 0.0f,
+			.sender = nullptr,
+		};
+
+		auto eventSource = SKSE::GetModCallbackEventSource();
+		eventSource->SendEvent(&modEvent);
+	}
+
+	void VirtualKeyboard::OnVirtualKeyboardCancel()
+	{
+		auto modEvent = SKSE::ModCallbackEvent{
+			.eventName = "VirtualKeyboardClose",
+			.strArg = nullptr,
+			.numArg = 1.0f,
+			.sender = nullptr,
+		};
+
+		auto eventSource = SKSE::GetModCallbackEventSource();
+		eventSource->SendEvent(&modEvent);
 	}
 
 	bool VirtualKeyboard::RegisterFuncs(RE::BSScript::IVirtualMachine* a_vm)

@@ -1,11 +1,10 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "skyrimsteamkeyboard",
-  "version": "1",
+  "version": "2",
   "dependencies": [
     "boost-stl-interfaces",
     "rsm-binary-io",
-    "spdlog",
-    "xbyak"
+    "spdlog"
   ]
 }

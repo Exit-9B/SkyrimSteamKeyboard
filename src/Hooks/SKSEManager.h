@@ -1,10 +1,8 @@
 #pragma once
 
-#include "Steam/CallbackManager.h"
-
 namespace Hooks
 {
-	class SKSEManager final : public Steam::ICallbackHandler<::GamepadTextInputDismissed_t>
+	class SKSEManager final
 	{
 	public:
 		static SKSEManager* GetSingleton();
@@ -16,12 +14,16 @@ namespace Hooks
 
 		void Install();
 
-		void HandleEvent(::GamepadTextInputDismissed_t* a_param) override;
-
 		void SetMovie(RE::GFxMovie* a_movie);
+
+		static void VirtualKeyboardDone(void* a_userParam, const char* a_text);
+
+		static void OnVirtualKeyboardCancel();
 
 	private:
 		SKSEManager() = default;
+
+		void VirtualKeyboardDismissed(bool a_submitted, const char* a_text);
 
 		void ScaleformPatch();
 

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 
 project(
 	SteamKeyboard
-	VERSION 1.0.1
+	VERSION 2.0.0
 	LANGUAGES CXX
 )
 
@@ -16,8 +16,6 @@ list(APPEND CMAKE_MODULE_PATH
 include(SKSEPlugin)
 include(Papyrus)
 
-set(SKSE_USE_XBYAK ON)
-
 SKSEPlugin_Add(
 	${PROJECT_NAME}
 	SOURCE_DIR src
@@ -30,18 +28,12 @@ SKSEPlugin_Add(
 		src/PCH/PCH.h
 )
 
-set(STEAMWORKS_SDK_DIR "${PROJECT_SOURCE_DIR}/external/steamworks_sdk_134/sdk")
+set(STEAMWORKS_SDK_DIR "${PROJECT_SOURCE_DIR}/external/steamworks_sdk_155/sdk")
 
 target_include_directories(
 	${PROJECT_NAME}
 	PRIVATE
 		"${STEAMWORKS_SDK_DIR}/public"
-)
-
-target_link_libraries(
-	${PROJECT_NAME}
-	PRIVATE
-		"${STEAMWORKS_SDK_DIR}/redistributable_bin/win64/steam_api64.lib"
 )
 
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)

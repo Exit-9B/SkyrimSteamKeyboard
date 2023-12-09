@@ -1,6 +1,6 @@
 #include "SKSEManager.h"
 
-#include "Steam/Steam.h"
+#include "SystemUtilityManager.h"
 
 namespace Hooks
 {
@@ -15,7 +15,7 @@ namespace Hooks
 		ScaleformPatch();
 	}
 
-	void SKSEManager::HandleEvent(::GamepadTextInputDismissed_t* a_param)
+	void SKSEManager::VirtualKeyboardDismissed(bool a_submitted, const char* a_text)
 	{
 		if (!_movie) {
 			return;
@@ -36,9 +36,9 @@ namespace Hooks
 		}
 
 		// Only alter the text field ourselves if text was submitted
-		if (a_param->m_bSubmitted) {
+		if (a_submitted) {
 			RE::GFxValue text;
-			std::string input = Steam::GetTextInput(a_param);
+			std::string input = a_text;
 			text.SetString(input);
 
 			textField.SetMember("text", text);
@@ -61,9 +61,9 @@ namespace Hooks
 
 			std::array<RE::GFxValue, 5> args;
 			args[0].SetString("keyDown");
-			args[1].SetNumber(a_param->m_bSubmitted ? Accept : Cancel);
+			args[1].SetNumber(a_submitted ? Accept : Cancel);
 			args[2].SetNumber(0);
-			args[3].SetString(a_param->m_bSubmitted ? "Accept" : "Cancel");
+			args[3].SetString(a_submitted ? "Accept" : "Cancel");
 			args[4].SetNull();
 
 			inputDelegate.Invoke("handleKeyPress", args);
@@ -121,6 +121,16 @@ namespace Hooks
 		skse.SetMember("AllowTextInput", fn_AllowTextInput);
 	}
 
+	void SKSEManager::VirtualKeyboardDone([[maybe_unused]] void* a_userParam, const char* a_text)
+	{
+		GetSingleton()->VirtualKeyboardDismissed(true, a_text);
+	}
+
+	void SKSEManager::OnVirtualKeyboardCancel()
+	{
+		GetSingleton()->VirtualKeyboardDismissed(false, "");
+	}
+
 	void SKSEScaleform_AllowTextInput::Call(Params& a_params)
 	{
 		if (a_params.argCount < 1) {
@@ -129,14 +139,9 @@ namespace Hooks
 
 		const bool enable = a_params.args[0].GetBool();
 
-		if (enable && Steam::ShouldUseVirtualKeyboard()) {
-			auto utils = ::SteamUtils();
-			if (!utils) {
-				return;
-			}
-
-			::EGamepadTextInputMode inputMode = k_EGamepadTextInputModeNormal;
-			::EGamepadTextInputLineMode lineInputMode = k_EGamepadTextInputLineModeSingleLine;
+		if (enable && SystemUtilityManager::GetSingleton()->ShouldUseVirtualKeyboard()) {
+			bool inputPassword = false;
+			bool inputMultipleLines = false;
 			uint32 charMax = 65532;
 			std::string existingText;
 
@@ -157,13 +162,13 @@ namespace Hooks
 			RE::GFxValue password;
 			textField.GetMember("password", &password);
 			if (password.IsBool() && password.GetBool() == true) {
-				inputMode = k_EGamepadTextInputModePassword;
+				inputPassword = true;
 			}
 
 			RE::GFxValue multiline;
 			textField.GetMember("multiline", &multiline);
 			if (multiline.IsBool() && multiline.GetBool() == true) {
-				lineInputMode = k_EGamepadTextInputLineModeMultipleLines;
+				inputMultipleLines = true;
 			}
 
 			RE::GFxValue maxChars;
@@ -178,16 +183,18 @@ namespace Hooks
 				existingText = text.GetString();
 			}
 
-			utils->ShowGamepadTextInput(
-				inputMode,
-				lineInputMode,
-				nullptr,
-				charMax,
-				existingText.c_str());
-
 			auto skseManager = SKSEManager::GetSingleton();
 			skseManager->SetMovie(a_params.movie);
-			Steam::CallbackManager::GetSingleton()->RegisterListener(skseManager);
+
+			Hooks::SystemUtilityManager::GetSingleton()->ShowVirtualKeyboard(
+				existingText.c_str(),
+				&SKSEManager::VirtualKeyboardDone,
+				&SKSEManager::OnVirtualKeyboardCancel,
+				nullptr,
+				charMax,
+				nullptr,
+				inputMultipleLines,
+				inputPassword);
 		}
 		else {
 			if (const auto controlMap = RE::ControlMap::GetSingleton()) {
