@@ -37,7 +37,7 @@ namespace Hooks
 	{
 		using IsUsingGamepad_t = bool (*)(RE::BSInputDeviceManager*);
 		REL::Relocation<IsUsingGamepad_t> isUsingGamepad{
-			RE::Offset::BSInputDeviceManager::IsUsingGamepad
+			RE::Offset::BSInputDeviceManager::QUsingGamepad
 		};
 
 		return isUsingGamepad(inputDeviceManager);

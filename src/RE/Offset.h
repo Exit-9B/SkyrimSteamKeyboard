@@ -6,7 +6,7 @@ namespace RE
 	{
 		namespace BSInputDeviceManager
 		{
-			inline constexpr auto IsUsingGamepad = REL::ID(68622);
+			inline constexpr auto QUsingGamepad = REL::ID(443396);
 			inline constexpr auto PollInputDevices = REL::ID(68617);
 		}
 
