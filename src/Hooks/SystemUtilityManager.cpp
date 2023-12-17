@@ -130,6 +130,8 @@ namespace Hooks
 
 		const auto systemUtility = RE::BSWin32SystemUtility::GetSingleton();
 		if (systemUtility) {
+			// Auto Input Switch reads this variable in its hook, so reset it first
+			systemUtility->isRunningOnSteamDeck = IsRunningOnSteamDeck;
 			systemUtility->isRunningOnSteamDeck = GetSingleton()->ShouldUseVirtualKeyboard();
 		}
 	}
