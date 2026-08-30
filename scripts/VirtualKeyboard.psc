@@ -6,5 +6,5 @@ Scriptname VirtualKeyboard Hidden
 ; Get whether we should use the virtual keyboard (i.e. Big Picture is available and the player is using the gamepad).
 bool Function ShouldBeUsed() global native
 
-; Shows the virtual keyboard, and raises the mod event "VirtualKeyboardDismissed" when it is dismissed.
+; Shows the virtual keyboard, and raises the mod event "VirtualKeyboardClose" when it is dismissed.
 Function Show(string asDescription = "", string asExistingText = "", int aiMaxChars = 32, bool abMultipleLines = false, bool abPassword = false) global native
