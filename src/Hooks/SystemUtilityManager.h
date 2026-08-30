@@ -32,9 +32,9 @@ namespace Hooks
 			bool a_multipleLines = false,
 			bool a_password = false);
 
-		static void DoInitialize(RE::BSWin32SystemUtility* a_systemUtility);
+		static void DoInitialize(RE::BSWin32SystemUtility_Steam* a_systemUtility);
 
-		static void PostInitialize(RE::BSWin32SystemUtility* a_systemUtility);
+		static void PostInitialize(RE::BSWin32SystemUtility_Steam* a_systemUtility);
 
 		static void StartInputProcessing(
 			RE::BSInputDeviceManager* a_inputDeviceManager,

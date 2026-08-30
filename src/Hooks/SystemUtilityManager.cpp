@@ -19,7 +19,9 @@ namespace Hooks
 	void SystemUtilityManager::Install()
 	{
 		auto vtbl = REL::Relocation<std::uintptr_t>(RE::Offset::BSWin32SystemUtility::Vtbl);
-		_DoInitialize = vtbl.write_vfunc(4, &DoInitialize);
+		_DoInitialize = vtbl.write_vfunc(
+			REL::Module::get().version() >= SKSE::RUNTIME_1_7_99 ? 5 : 4,
+			&DoInitialize);
 
 		auto hook = REL::Relocation<std::uintptr_t>(
 			RE::Offset::BSInputDeviceManager::PollInputDevices,
@@ -45,7 +47,8 @@ namespace Hooks
 
 	static bool IsOverlayEnabled()
 	{
-		const auto systemUtility = RE::BSWin32SystemUtility::GetSingleton();
+		const auto systemUtility = static_cast<RE::BSWin32SystemUtility_Steam*>(
+			RE::BSWin32SystemUtility::GetSingleton());
 		const auto isteamutils = systemUtility ? systemUtility->steamUtils : nullptr;
 		return isteamutils ? isteamutils->IsOverlayEnabled() : false;
 	}
@@ -68,7 +71,8 @@ namespace Hooks
 		bool a_multipleLines,
 		bool a_password)
 	{
-		const auto systemUtility = RE::BSWin32SystemUtility::GetSingleton();
+		const auto systemUtility = static_cast<RE::BSWin32SystemUtility_Steam*>(
+			RE::BSWin32SystemUtility::GetSingleton());
 		const auto isteamutils = systemUtility ? systemUtility->steamUtils : nullptr;
 		if (!isteamutils) {
 			return;
@@ -94,7 +98,7 @@ namespace Hooks
 			a_existingText);
 	}
 
-	void SystemUtilityManager::DoInitialize(RE::BSWin32SystemUtility* a_systemUtility)
+	void SystemUtilityManager::DoInitialize(RE::BSWin32SystemUtility_Steam* a_systemUtility)
 	{
 		_DoInitialize(a_systemUtility);
 		PostInitialize(a_systemUtility);
@@ -102,18 +106,18 @@ namespace Hooks
 
 	static bool IsSteamInBigPictureMode()
 	{
-		const auto bufSize = ::GetEnvironmentVariable(TEXT("SteamTenfoot"), nullptr, 0);
+		const auto bufSize = ::GetEnvironmentVariableW(L"SteamTenfoot", nullptr, 0);
 		if (!bufSize) {
 			return false;
 		}
 
-		const auto buffer = std::make_unique<::TCHAR[]>(bufSize);
-		::GetEnvironmentVariable(TEXT("SteamTenfoot"), buffer.get(), bufSize);
+		const auto buffer = std::make_unique<::WCHAR[]>(bufSize);
+		::GetEnvironmentVariableW(L"SteamTenfoot", buffer.get(), bufSize);
 
-		return ::_tcscmp(buffer.get(), TEXT("1")) == 0;
+		return ::wcscmp(buffer.get(), L"1") == 0;
 	}
 
-	void SystemUtilityManager::PostInitialize(RE::BSWin32SystemUtility* a_systemUtility)
+	void SystemUtilityManager::PostInitialize(RE::BSWin32SystemUtility_Steam* a_systemUtility)
 	{
 		assert(a_systemUtility);
 
@@ -128,7 +132,8 @@ namespace Hooks
 	{
 		_StartInputProcessing(a_inputDeviceManager, a_first);
 
-		const auto systemUtility = RE::BSWin32SystemUtility::GetSingleton();
+		const auto systemUtility = static_cast<RE::BSWin32SystemUtility_Steam*>(
+			RE::BSWin32SystemUtility::GetSingleton());
 		if (systemUtility) {
 			// Auto Input Switch reads this variable in its hook, so reset it first
 			systemUtility->isRunningOnSteamDeck = IsRunningOnSteamDeck;
